@@ -1,10 +1,16 @@
 <?php 
 class Produtos extends CI_Controller {
 
+    private $empresa_id;
+    private $empresa_email;
+
     public function __construct() {
         parent::__construct();
+
         $this->verificarLogin();
         $this->load->model('produtos_model');
+        $this->empresa_id = $this->session->userdata['empresa']->empresa_id;
+        $this->empresa_email = $this->session->userdata['empresa']->email;
     }
     
     public function index() {
@@ -13,14 +19,15 @@ class Produtos extends CI_Controller {
     
     public function painel()
     {
-        $this->data['produtos'] = $this->produtos_model->buscar();
+        $this->data['produtos'] = $this->produtos_model->buscar($this->empresa_id);
         carregarPaginasEmpresas('empresas/produtos/painel', $this, $this->data);
     }
     
     public function adicionar()
     {
-        carregarPaginasEmpresas('empresas/produtos/adicionar', $this);
-
+        $this->data['categorias'] = $this->produtos_model->buscarCategorias();
+        carregarPaginasEmpresas('empresas/produtos/adicionar', $this, $this->data);
+        
         if($this->input->post()):
             $image = 'default.png';
             
@@ -31,7 +38,8 @@ class Produtos extends CI_Controller {
             endif; 
             
             $data = $this->input->post();
-            $data['preco_venda'] = str_replace(['R$', '_', ','], ['', '', '.'], $data['preco_venda']);
+            $data['empresa_id']  = $this->empresa_id;
+            $data['preco_venda'] = $this->tratarPreco($data['preco_venda']);
             $data['thumb'] = $image;
             
             if($this->produtos_model->adicionar($data)):
@@ -47,7 +55,8 @@ class Produtos extends CI_Controller {
     public function visualizar()
     {
         if($this->uri->segment(4)):
-            $this->data['produto'] = $this->produtos_model->buscar(['produto_id' => $this->uri->segment(4)]);
+            $this->data['produto'] = $this->produtos_model->buscar($this->empresa_id, ['produto_id' => $this->uri->segment(4)]);
+            $this->data['categorias'] = $this->produtos_model->buscarCategorias();
             carregarPaginasEmpresas('empresas/produtos/visualizar', $this, $this->data);
         endif;
     }
@@ -55,7 +64,9 @@ class Produtos extends CI_Controller {
     public function editar()
     {
         if($this->uri->segment(4)):
-            $this->data['produto'] = $this->produtos_model->buscar(['produto_id' => $this->uri->segment(4)]);
+            $this->data['produto']    = $this->produtos_model->buscar($this->empresa_id, ['produto_id' => $this->uri->segment(4)]);
+            $this->data['categorias'] = $this->produtos_model->buscarCategorias();
+
             carregarPaginasEmpresas('empresas/produtos/editar', $this, $this->data);
             
             if($this->input->post()):
@@ -72,12 +83,12 @@ class Produtos extends CI_Controller {
                 $data['preco_venda'] = str_replace(['R$', '_', ','], ['', '', '.'], $data['preco_venda']);
                 $data['thumb'] = $image;
                 
-                if($this->produtos_model->editar($data, $this->data['produto']->produto_id)):
+                if($this->produtos_model->editar($this->empresa_id, $data, $this->data['produto']->produto_id)):
                     $this->session->set_flashdata('sucesso', 'Produto alterado com sucesso!');
                     redirect(base_url('empresas/produtos/visualizar/'.$this->data['produto']->produto_id));
                 else:
                     $this->session->set_flashdata('erro', 'Erro ao editar produto!');
-                    redirect(base_url('empresas/produtos/editar'.$this->data['produto']->produto_id));
+                    redirect(base_url('empresas/produtos/editar/'.$this->data['produto']->produto_id));
                 endif;
             endif; 
             
@@ -87,9 +98,10 @@ class Produtos extends CI_Controller {
     public function excluir()
     {
         if($this->uri->segment(4)):
-            $this->data['produto'] = $this->produtos_model->buscar(['produto_id' => $this->uri->segment(4)]);
+            $this->data['produto'] = $this->produtos_model->buscar($this->empresa_id, ['produto_id' => $this->uri->segment(4)]);
             $imagem  = $this->data['produto']->thumb;
-            if($this->produtos_model->excluir($this->uri->segment(4))):
+            
+            if($this->produtos_model->excluir($this->empresa_id, $this->uri->segment(4))):
                 $this->deletarImagem(($this->data['produto']->thumb));
                 $this->session->set_flashdata('sucesso', 'Produto excluído com sucesso!');
                 redirect(base_url('empresas/produtos/'));
@@ -103,12 +115,6 @@ class Produtos extends CI_Controller {
         endif;
     }
     
-    public function categorias()
-    {
-        $this->data['categorias'] = $this->produtos_model->categorias();
-        carregarPaginasEmpresas('empresas/produtos/categorias', $this, $this->data);
-    }
-
     public function upload($image)
     {
         $pasta = FCPATH.'/assets/empresas/dist/img/produtos/';
@@ -147,4 +153,10 @@ class Produtos extends CI_Controller {
             redirect(base_url('empresas/login'));
         endif;
     }
+
+    public function tratarPreco($preco)
+    {
+        return str_replace(['R$', '_', ','], ['', '', '.'], $preco);
+    }
+    
 }

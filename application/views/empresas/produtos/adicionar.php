@@ -58,19 +58,13 @@
                             enctype="multipart/form-data">
                             
                             <div class="col-md-2 text-center">
+                                <br><br>
                                 <label
+                                    style="padding: 5px"
+                                    class="bnt btn-danger"
                                     id="labelThumb"
-                                    style="
-                                        text
-                                        corsor: pointer;
-                                        background-image: url('../../assets/empresas/dist/img/produtos/default.png');
-                                        background-size: 100%;
-                                        color: #fff;
-                                        width: 150px;
-                                        height: 150px;
-                                        border-radius: 50%"
-                                    for="thumb">IMAGEM</label>
-                                <input  id="thumb" style="display: none" display: none class="form-control" type="file" name="thumb" >
+                                    for="thumb">INSERIR IMAGEM </label>
+                                <input id="thumb" style="display: none" type="file" name="thumb" >
                             </div>
 
                             
@@ -93,15 +87,9 @@
                                         class="form-control"
                                         required>
                                         <option value="">Selecione uma categoria</option>
-                                        <option value="cerveja">Cerveja</option>
-                                        <option value="bebidas">Bebidas</option>
-                                        <option value="doces">Doces</option>
-                                        <option value="frios">Frios</option>
-                                        <option value="sobremesa">Sobremesa</option>
-                                        <option value="acougue">Açougue</option>
-                                        <option value="frutas">Frutas e Legumes</option>
-                                        <option value="medicamentos">Medicamentos</option>
-                                        <option value="lanches">Lanches</option>
+                                        <?php foreach($categorias as $c):?>
+                                            <option value="<?=$c->categoria_id?>"><?=$c->descricao?></option>
+                                        <?php endforeach ?>
                                     </select>
                                 </div>
     

@@ -9,7 +9,7 @@ class Login_model extends CI_Model {
 
     public function autenticarEmpresa($usuario, $senha)
     {
-        $this->db->select('nome_fantasia, cnpj, endereco, cidade, estado, email');
+        $this->db->select('empresa_id, nome_fantasia, cnpj, endereco, cidade, estado, email');
         $this->db->where('email', $usuario);
         $this->db->where('senha', md5($senha));
 

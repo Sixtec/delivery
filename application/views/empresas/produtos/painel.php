@@ -24,12 +24,6 @@
 
     <div class="row">
         <div class="col-md-12">
-
-            <?php if($this->session->sucesso):?>
-                <p style="padding: 5px" class="btn-success"><?=$this->session->sucesso?></p>
-            <?php elseif($this->session->erro):?>
-                <p style="padding: 5px" class="btn-danger"><?=$this->session->erro?></p>
-            <?php endif ?>
             <div class="box">
                 <div class="box-header with-border ">
                     <h3 class="box-title">Produtos</h3>
@@ -57,6 +51,13 @@
                 <div class="box-body">
                     <div class="row">
                         <div class="col-md-12">
+
+                        <?php if($this->session->sucesso):?>
+                            <p style="padding: 5px" class="bg-success"><?=$this->session->sucesso?></p>
+                        <?php elseif($this->session->erro):?>
+                            <p style="padding: 5px" class="bg-danger"><?=$this->session->erro?></p>
+                        <?php endif ?>
+                        
                             <table
                                 id="produtos"
                                 class="table table-bordered table-hover">

@@ -86,16 +86,13 @@
                                         name="categoria"
                                         class="form-control"
                                         required>
-                                        <option value="">Selecione uma categoria</option>
-                                        <option value="cerveja">Cerveja</option>
-                                        <option value="bebidas">Bebidas</option>
-                                        <option value="doces">Doces</option>
-                                        <option value="frios">Frios</option>
-                                        <option value="sobremesa">Sobremesa</option>
-                                        <option value="acougue">Açougue</option>
-                                        <option value="frutas">Frutas e Legumes</option>
-                                        <option value="medicamentos">Medicamentos</option>
-                                        <option value="lanches">Lanches</option>
+                                        <?php foreach($categorias as $c):?>
+                                            <?php if($c->categoria_id == $produto->categoria):?>
+                                                <option selected value="<?=$c->categoria_id?>"><?=$c->descricao?></option>
+                                            <?php else: ?>
+                                                <option value="<?=$c->categoria_id?>"><?=$c->descricao?></option>
+                                            <?php endif ?>
+                                        <?php endforeach ?>
                                     </select>
                                 </div>
     
