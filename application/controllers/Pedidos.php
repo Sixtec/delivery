@@ -10,6 +10,8 @@ class Pedidos extends CI_Controller {
         $this->load->model('pedidos_model');
         $this->load->model('produtos_model');
         $this->empresa_id = $this->session->userdata['empresa']->empresa_id;
+        $this->template = new Template('empresas/templates/','empresas/pedidos/');
+        $this->alert = new Alert();
     }
 
     public function index()
@@ -36,8 +38,9 @@ class Pedidos extends CI_Controller {
                     $status = false;
             }
         endif;
+
         $this->data['pedidos'] = $this->pedidos_model->buscar($this->empresa_id,$status);
-        carregarPaginasEmpresas('empresas/pedidos/painel', $this, $this->data);
+        $this->template->load($this->data, ['painel']);
     }
     
     public function visualizar()
@@ -49,7 +52,7 @@ class Pedidos extends CI_Controller {
                 $this->uri->segment(4)
             );
             $this->data['produtos_pedido'] = $this->pedidos_model->pedidos_produtos($this->empresa_id, $this->uri->segment(4));
-            carregarPaginasEmpresas('empresas/pedidos/visualizar', $this, $this->data);
+            $this->template->load($this->data, ['visualizar']);
         endif;
     }
 
