@@ -11,7 +11,7 @@ class Produtos_model extends CI_Model {
     {
         $this->db->where('empresa_id', $empresa);
         if($where):
-            $this->db->where($where);
+            $this->db->where('produto_id', $where);
             $query = $this->db->get('tb_produtos');
             return $query->row();
         endif;
@@ -19,8 +19,9 @@ class Produtos_model extends CI_Model {
         return $query->result();
     }
 
-    public function buscarCategorias($where = false)
+    public function buscar_categorias($where = false)
     {
+        $this->db->order_by('descricao','ASC');
         if($where):
             $this->db->where('categoria_id', $where);
             $query = $this->db->get('tb_categorias_produtos');
@@ -29,7 +30,7 @@ class Produtos_model extends CI_Model {
         $query = $this->db->get('tb_categorias_produtos');
         return $query->result();
     }
-    
+
     public function adicionar($data)
     {
         if($this->db->insert('tb_produtos', $data)):

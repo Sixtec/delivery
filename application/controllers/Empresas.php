@@ -1,11 +1,11 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Empresas extends CI_Controller {
     
     public function __construct()
     {
         parent::__construct();
-
         $this->verificarLogin();
         $this->load->model('login_model');
     }
@@ -31,4 +31,5 @@ class Empresas extends CI_Controller {
             redirect(base_url('empresas/login'));
         endif;
     }
+
 }

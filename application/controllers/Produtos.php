@@ -6,7 +6,6 @@ class Produtos extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-
         $this->verificarLogin();
         $this->load->model('produtos_model');
         $this->empresa_id = $this->session->userdata['empresa']->empresa_id;
@@ -25,18 +24,16 @@ class Produtos extends CI_Controller {
     
     public function adicionar()
     {
-        $this->data['categorias'] = $this->produtos_model->buscarCategorias();
+        $this->data['categorias'] = $this->produtos_model->buscar_categorias();
         carregarPaginasEmpresas('empresas/produtos/adicionar', $this, $this->data);
         
         if($this->input->post()):
             $image = 'default.png';
-            
             if($_FILES['thumb']['name'] != null):
                 if($u = $this->upload($_FILES['thumb'])):
                     $image = $u;
                 endif;
             endif; 
-            
             $data = $this->input->post();
             $data['empresa_id']  = $this->empresa_id;
             $data['preco_venda'] = $this->tratarPreco($data['preco_venda']);
@@ -55,8 +52,8 @@ class Produtos extends CI_Controller {
     public function visualizar()
     {
         if($this->uri->segment(4)):
-            $this->data['produto'] = $this->produtos_model->buscar($this->empresa_id, ['produto_id' => $this->uri->segment(4)]);
-            $this->data['categorias'] = $this->produtos_model->buscarCategorias();
+            $this->data['produto'] = $this->produtos_model->buscar($this->empresa_id, $this->uri->segment(4));
+            $this->data['categorias'] = $this->produtos_model->buscar_categorias();
             carregarPaginasEmpresas('empresas/produtos/visualizar', $this, $this->data);
         endif;
     }
@@ -64,25 +61,20 @@ class Produtos extends CI_Controller {
     public function editar()
     {
         if($this->uri->segment(4)):
-            $this->data['produto']    = $this->produtos_model->buscar($this->empresa_id, ['produto_id' => $this->uri->segment(4)]);
-            $this->data['categorias'] = $this->produtos_model->buscarCategorias();
-
+            $this->data['produto']    = $this->produtos_model->buscar($this->empresa_id, $this->uri->segment(4));
+            $this->data['categorias'] = $this->produtos_model->buscar_categorias();
             carregarPaginasEmpresas('empresas/produtos/editar', $this, $this->data);
-            
             if($this->input->post()):
                 $image = $this->data['produto']->thumb;
-                
                 if($_FILES['thumb']['name'] != null):
                     if($u = $this->upload($_FILES['thumb'])):
                         $this->deletarImagem(($image));
                         $image = $u;
                     endif;
                 endif;
-                
                 $data = $this->input->post();
                 $data['preco_venda'] = str_replace(['R$', '_', ','], ['', '', '.'], $data['preco_venda']);
                 $data['thumb'] = $image;
-                
                 if($this->produtos_model->editar($this->empresa_id, $data, $this->data['produto']->produto_id)):
                     $this->session->set_flashdata('sucesso', 'Produto alterado com sucesso!');
                     redirect(base_url('empresas/produtos/visualizar/'.$this->data['produto']->produto_id));
